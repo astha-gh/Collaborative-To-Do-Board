@@ -21,6 +21,7 @@ mongoose.connect(process.env.MONGO_URI).then(
 ).catch(err => console.log(err));
 
 app.use("/api/auth", require("./routes/auth"));
+app.use('/api/tasks' , require('./routes/taskRoutes'));
 
 io.on("connection", socket => {
     console.log("User connected : " + socket.id);
