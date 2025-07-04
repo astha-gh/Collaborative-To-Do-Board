@@ -1,7 +1,7 @@
 import {BrowserRouter as Router , Routes , Route} from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import Board from './components/Board'
+import KanbanBoard from './components/KanbanBoard'
 
 function App(){
   return (
@@ -9,7 +9,7 @@ function App(){
       <Routes>
         <Route path = '/login' element={<LoginPage/>}/>
         <Route path='/register' element={<RegisterPage />} />
-        <Route path='/board' element={<Board />} />
+        <Route path='/kanbanBoard' element={<KanbanBoard />} />
       </Routes>
     </Router>
   )

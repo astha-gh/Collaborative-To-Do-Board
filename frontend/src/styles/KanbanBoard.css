@@ -1,0 +1,35 @@
+.kanban-container{
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    height: 93vh;
+    background-color:#f0f2f5 ;
+    overflow-x: auto;
+}
+
+.kanban-column{
+    flex:1;
+    background-color: white;
+    min-width: 300px;
+    border-radius: 8px;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.kanban-column h3{
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.kanban-task:hover {
+    transform: scale(1.02);
+    background-color: #d2e3fc; 
+}
+
+@media (max-width: 768px) {
+    .kanban-container {
+        flex-direction: column;
+        height: auto;
+    } 
+}
