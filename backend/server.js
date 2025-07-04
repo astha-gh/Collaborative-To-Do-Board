@@ -4,13 +4,21 @@ const app = express();
 const PORT = process.env.PORT || 7777;
 const cors = require('cors');
 const mongoose = require('mongoose');
+
+
 const http = require('http');
 const { Server } = require('socket.io');
-
-
 const server = http.createServer(app);
+
 const io = new Server(server, {
     cors: { origin: '*' }
+})
+
+io.on("connection", socket => {
+    console.log("User connected : " + socket.id);
+    socket.on("disconnect", () => {
+        console.log("User disconnected");
+    });
 })
 
 app.use(cors());
@@ -22,13 +30,6 @@ mongoose.connect(process.env.MONGO_URI).then(
 
 app.use("/api/auth", require("./routes/auth"));
 app.use('/api/tasks' , require('./routes/taskRoutes'));
-
-io.on("connection", socket => {
-    console.log("User connected : " + socket.id);
-    socket.on("disconnect", () => {
-        console.log("User disconnected");
-    });
-}) 
 
 app.set("io", io);
 
