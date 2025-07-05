@@ -27,9 +27,33 @@
     background-color: #d2e3fc; 
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
     .kanban-container {
         flex-direction: column;
         height: auto;
     } 
+} */
+
+.kanban-task{
+    background-color: #e8f0fe;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: grab;
+    transition: transform 0.2s ease;
+}
+
+.kanban-task:active {
+    cursor: grabbing;
+    opacity: 0.7;
+    transform: scale(1.05);
+}
+
+.kanban-column {
+    min-height: 400px;
+    border: 2px dashed transparent;
+}
+
+.kanban-column:hover {
+    border-color: #90caf9; 
 }
