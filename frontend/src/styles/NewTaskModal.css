@@ -72,3 +72,48 @@
     border-radius: 6px;
     cursor: pointer;
 }
+
+.conflict-warning {
+    background-color: #fff0f0;
+    border: 1px solid #ff5c5c;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+}
+
+.conflict-boxes {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.conflict-version {
+    flex: 1;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.conflict-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.overwrite-btn {
+    background-color: #e74c3c;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 4px;
+}
+
+.merge-btn {
+    background-color: #3498db;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 4px;
+}

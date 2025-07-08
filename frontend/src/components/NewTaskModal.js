@@ -3,12 +3,14 @@ import '../styles/NewTaskModal.css';
 import SmartAssign from './SmartAssignButton';
 
 const NewTaskModal = ({onClose , taskToEdit , allTasks}) => {
+    const [conflictData, setConflictData] = useState(null);
     const [form , setForm] = useState({
         title : '',
         description: '',
         assignedTo: '',
         status:'Todo',
         priority:'Medium',
+        lastUpdated:'',
     });
 
     const [users, setUser] = useState([]);
@@ -16,11 +18,12 @@ const NewTaskModal = ({onClose , taskToEdit , allTasks}) => {
     useEffect(() => {
         if (taskToEdit) {
             setForm({
-                title: taskToEdit.title || '',
-                description: taskToEdit.description || '',
-                assignedTo: taskToEdit.assignedTo?._id || '',
-                status: taskToEdit.status || 'Todo',
-                priority: taskToEdit.priority || 'Medium',
+                title: taskToEdit.title,
+                description: taskToEdit.description,
+                assignedTo: taskToEdit.assignedTo?._id,
+                status: taskToEdit.status,
+                priority: taskToEdit.priority,
+                lastUpdated: taskToEdit.lastUpdated,
             });
         }
     }, [taskToEdit]);
@@ -36,30 +39,101 @@ const NewTaskModal = ({onClose , taskToEdit , allTasks}) => {
         setForm({...form , [e.target.name]: e.target.value});
     };
 
-    const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const url = taskToEdit ? `http://localhost:7777/api/tasks/${taskToEdit._id}`
+        const url = taskToEdit
+            ? `http://localhost:7777/api/tasks/${taskToEdit._id}`
             : `http://localhost:7777/api/tasks`;
 
         const method = taskToEdit ? 'PUT' : 'POST';
 
-        try{
-            const res = await fetch(url , {
+        const taskDataToSend = {
+            ...form,
+            lastUpdated: form.lastUpdated || new Date().toISOString()
+        };
+
+        try {
+            const res = await fetch(url, {
                 method,
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify(form),
+                body: JSON.stringify(taskDataToSend),
             });
-            const newTask = await res.json();
+
+            if (res.status === 409) {
+                const data = await res.json();
+                setConflictData({
+                    serverVersion: data.serverVersion,
+                    clientVersion: taskDataToSend,
+                });
+                return;
+            }
+
+            if (!res.ok) throw new Error('Failed to save task');
+
+            await res.json();
             onClose();
+        } catch (err) {
+            console.error('Error creating/updating task:', err);
+            alert('Something went wrong');
         }
-        catch(err){
-            console.error('Error creating Task' , err);
+    };
+    
+    
+
+    const handleOverwrite = async () => {
+        try {
+            const response = await fetch(`http://localhost:7777/api/tasks/${taskToEdit._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    ...conflictData.clientVersion,
+                    lastUpdated: new Date().toISOString(),
+                    isResolution: true 
+                }),
+            });
+
+            if (!response.ok) throw new Error('Overwrite failed');
+            onClose();
+        } catch (err) {
+            console.error('Overwrite error:', err);
+            alert('Overwrite failed. Please try again.');
         }
-    }
+    };
+
+    const handleMerge = async () => {
+        try {
+            
+            const mergedTask = {
+                ...conflictData.serverVersion, 
+                description: `${conflictData.serverVersion.description} ${conflictData.clientVersion.description}`,
+                lastUpdated: new Date().toISOString(),
+                isResolution: true
+            };
+
+            const response = await fetch(`http://localhost:7777/api/tasks/${taskToEdit._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(mergedTask),
+            });
+
+            if (!response.ok) throw new Error('Merge failed');
+            onClose();
+        } catch (err) {
+            alert('Merge failed. Please try again.');
+        }
+    };
+    
+    
 
     const handleSmartAssign = () => {
         const user = SmartAssign(allTasks, users);
@@ -72,6 +146,47 @@ const NewTaskModal = ({onClose , taskToEdit , allTasks}) => {
         <div className="modal-backdrop">
             <div className="modal">
                 <h2>{taskToEdit ? 'Edit Task' : 'Create New Task'}</h2>
+                {conflictData && (
+                    <div className="conflict-warning">
+                        <h3>⚠️ Conflict Detected</h3>
+                        <p>This task was updated by someone else. Choose how to resolve:</p>
+
+                        <div className="conflict-boxes">
+                            <div className="conflict-version">
+                                <h4>Server Version</h4>
+                                <p><strong>Title:</strong> {conflictData.serverVersion.title}</p>
+                                <p><strong>Description:</strong> {conflictData.serverVersion.description}</p>
+                                <p><strong>Status:</strong> {conflictData.serverVersion.status}</p>
+                                <p><strong>Priority:</strong> {conflictData.serverVersion.priority}</p>
+                            </div>
+                            <div className="conflict-version">
+                                <h4>Your Version</h4>
+                                <p><strong>Title:</strong> {conflictData.clientVersion.title}</p>
+                                <p><strong>Description:</strong> {conflictData.clientVersion.description}</p>
+                                <p><strong>Status:</strong> {conflictData.clientVersion.status}</p>
+                                <p><strong>Priority:</strong> {conflictData.clientVersion.priority}</p>
+                            </div>
+                        </div>
+
+                        <div className="conflict-actions">
+                            <button
+                                type="button"
+                                onClick={handleOverwrite}
+                                className="overwrite-btn"
+                            >
+                                Overwrite
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleMerge}
+                                className="merge-btn"
+                            >
+                                Merge & Edit
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit}>
                     <input
                         type="text"

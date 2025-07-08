@@ -30,19 +30,46 @@ const getAllTasks = async(req , res) => {
     }
 }
 
-const updateTask = async(req , res) => {
-    try{
-        const update = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('assignedTo', 'name email');;
+const updateTask = async (req, res) => {
+    try {
+        const taskId = req.params.id;
+        const clientTask = req.body;
+
+        const existingTask = await Task.findById(taskId);
+        if (!existingTask) {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
+        if (!clientTask.isResolution) {
+            const clientTimestamp = new Date(clientTask.lastUpdated).getTime();
+            const serverTimestamp = new Date(existingTask.lastUpdated).getTime();
+
+            if (clientTimestamp !== serverTimestamp) {
+                return res.status(409).json({
+                    conflict: true,
+                    message: 'Conflict detected',
+                    serverVersion: existingTask,
+                    clientVersion: clientTask
+                });
+            }
+        }
+
+        const updatedTask = await Task.findByIdAndUpdate(taskId, {
+            ...clientTask,
+            lastUpdated: new Date()
+        }, { new: true }).populate('assignedTo', 'name email');
 
         const io = req.app.get('io');
-        io.emit('taskUpdated', update);
+        io.emit('taskUpdated', updatedTask);
 
-        res.json(update);
-    }
-    catch(err){
+        res.json(updatedTask);
+    } catch (err) {
+        console.error('Update error:', err);
         return res.status(500).json({ error: 'Server error while updating task' });
     }
-}
+};
+
+
 
 const deleteTask = async(req , res) => {
     try{
