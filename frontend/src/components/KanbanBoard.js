@@ -1,28 +1,36 @@
-import React, {useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import socket from '../socket';
-import '../styles/KanbanBoard.css'; 
+import '../styles/KanbanBoard.css';
+import TaskCard from './TaskCard';
+import NewTaskModal from "./NewTaskModal";
 
 
 const KanbanBoard = () => {
-    const [tasks , setTasks] = useState([]);
-    const [draggedTaskId , setdraggedTaskId] = useState(null);
+    const [tasks, setTasks] = useState([]);
+    const [draggedTaskId, setdraggedTaskId] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    
 
     useEffect(() => {
-        fetch('/api/tasks')
+        fetch('http://localhost:7777/api/tasks', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        })
             .then(res => res.json())
             .then(data => setTasks(data))
 
-        socket.on('taskCreated' , (newTask) => {
-            setTasks(prev => [...prev , newTask]);
+        socket.on('taskCreated', (newTask) => {
+            setTasks(prev => [...prev, newTask]);
         })
 
-        socket.on('taskUpdated' , (update) => {
-            setTasks(prev => 
+        socket.on('taskUpdated', (update) => {
+            setTasks(prev =>
                 prev.map(task => task._id === update._id ? update : task)
             )
         })
 
-        socket.on('taskDeleted' , (deleteId) => {
+        socket.on('taskDeleted', (deleteId) => {
             setTasks(prev => prev.filter(task => task._id !== deleteId))
         });
 
@@ -34,7 +42,6 @@ const KanbanBoard = () => {
 
     }, [])
 
-    //Storing dragged taskId when drag starts
     const handleDragStart = (e, taskId) => {
         setdraggedTaskId(taskId);
     }
@@ -45,15 +52,15 @@ const KanbanBoard = () => {
         if (!draggedTask || draggedTask.status === newStatus) return;
 
         const update = { ...draggedTask, status: newStatus };
-        setTasks(prev =>
-            prev.map(task => task._id === draggedTaskId ? update : task)
-        )
 
         try {
-            const res = await fetch(`/api/tasks/${draggedTaskId}`, {
+            const res = await fetch(`http://localhost:7777/api/tasks/${draggedTaskId}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: newStatus }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(update),
             });
             const data = await res.json();
             socket.emit('taskUpdated', data);
@@ -68,37 +75,66 @@ const KanbanBoard = () => {
         e.preventDefault();
     };
 
+    const handleDeleteTask = async (taskId) => {
+        await fetch(`http://localhost:7777/api/tasks/${taskId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+    };
 
-    const columns = ['todo', 'in-progress', 'done'];
+    const handleEditTask = (task) => {
+        console.log("Editing task:", task);
+      };
 
-    return(
-        <div className="kanban-container">
-            {
-                columns.map(col => (
-                    <div key={col} className="kanban-column"
-                    onDrop = {(e) => {
-                        handleDrop(e  , col)
-                    }}
-                    onDragOver={handleDragOver}
+    const columns = [
+        { key: 'Todo', label: 'TODO' },
+        { key: 'In Progress', label: 'IN PROGRESS' },
+        { key: 'Done', label: 'DONE' },
+    ];
+
+
+    return (
+        <div>
+            <div className="kanban-board-header">
+                <h2>Kanban Board</h2>
+                <button className="create-task-btn" onClick={() => setShowModal(true)}>+ New Task</button>
+            </div>
+
+            {showModal && (
+                <NewTaskModal
+                    onClose={() => setShowModal(false)}
+                />
+            )}
+
+            <div className="kanban-container">
+                {columns.map(col => (
+                    <div key={col.key} className="kanban-column"
+                        onDrop={(e) => handleDrop(e, col.key)}
+                        onDragOver={handleDragOver}
                     >
-                        <h3>{col.replace('-', ' ').toUpperCase()}</h3>
+                        <h3>{col.label}</h3>
                         {
                             tasks
-                                .filter(task => task.status === col)
+                                .filter(task => task.status === col.key)
                                 .map(task => (
-                                    <div key={task._id} className="kanban-task"
-                                    draggable 
-                                    onDragStart={(e) => handleDragStart(e , task._id)}>
-                                        <h4>{task.title}</h4>
-                                        <p>{task.description}</p>
-                                    </div>
-                            ))
+                                    <TaskCard
+                                        key={task._id}
+                                        task={task}
+                                        onDragStart={handleDragStart}
+                                        onDelete={handleDeleteTask}
+                                        onEdit={handleEditTask}
+                                    />
+                                ))
                         }
                     </div>
-                ))
-            }
+                ))}
+
+            </div>
         </div>
-    )
+    );
+
 }
 
 export default KanbanBoard;

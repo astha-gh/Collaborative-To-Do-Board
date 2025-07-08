@@ -9,11 +9,12 @@ const createTask = async(req , res) => {
         }
         const newTask = new Task({ title, description, assignedTo, status, priority });
         await newTask.save();
+        const populatedTask = await Task.findById(newTask._id).populate('assignedTo', 'name email');
 
         const io = req.app.get('io');
-        io.emit('taskCreated' , newTask);
+        io.emit('taskCreated' , populatedTask);
 
-        res.status(201).json(newTask);
+        res.status(201).json(populatedTask);
     }catch(err){
         return res.status(500).json({error : 'Server error while creating task'});
     }
@@ -31,7 +32,7 @@ const getAllTasks = async(req , res) => {
 
 const updateTask = async(req , res) => {
     try{
-        const update = await Task.findByIdAndUpdate(req.params.id , req.body , {new: true});
+        const update = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('assignedTo', 'name email');;
 
         const io = req.app.get('io');
         io.emit('taskUpdated', update);

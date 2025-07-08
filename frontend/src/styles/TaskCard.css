@@ -1,0 +1,88 @@
+.kanban-task {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-left: 5px solid #007bff;
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+    cursor: grab;
+    transition: transform 0.2s ease;
+}
+
+.kanban-task:hover {
+    transform: scale(1.02);
+    background-color: #f8f9fa;
+}
+
+.task-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #222;
+}
+
+.task-desc {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+}
+
+.task-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.task-meta,
+.task-priority
+{
+    font-size: 12px;
+    color: #333;
+}
+
+.task-priority.low {
+    color: green;
+}
+
+.task-priority.medium {
+    color: orange;
+}
+
+.task-priority.high {
+    color: red;
+}
+
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.task-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.icon {
+    cursor: pointer;
+    opacity: 0.7;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.icon:hover {
+    transform: scale(1.15);
+    opacity: 1;
+}
+
+.icon.delete {
+    color: crimson;
+}
+
+.icon.edit {
+    color: #007bff;
+}
