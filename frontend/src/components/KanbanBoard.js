@@ -9,7 +9,7 @@ const KanbanBoard = () => {
     const [tasks, setTasks] = useState([]);
     const [draggedTaskId, setdraggedTaskId] = useState(null);
     const [showModal, setShowModal] = useState(false);
-    
+    const [taskToEdit, setTaskToEdit] = useState(null);
 
     useEffect(() => {
         fetch('http://localhost:7777/api/tasks', {
@@ -85,8 +85,9 @@ const KanbanBoard = () => {
     };
 
     const handleEditTask = (task) => {
-        console.log("Editing task:", task);
-      };
+        setTaskToEdit(task);
+        setShowModal(true);
+    };
 
     const columns = [
         { key: 'Todo', label: 'TODO' },
@@ -104,7 +105,13 @@ const KanbanBoard = () => {
 
             {showModal && (
                 <NewTaskModal
-                    onClose={() => setShowModal(false)}
+                    onClose={() => {
+                        setShowModal(false);
+                        setTaskToEdit(null);
+                    }
+                    }
+                    taskToEdit={taskToEdit}
+                    allTasks={tasks}
                 />
             )}
 

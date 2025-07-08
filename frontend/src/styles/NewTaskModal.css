@@ -57,3 +57,18 @@
 .cancel-btn {
     background-color: #aaa;
 }
+
+.assign-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.smart-assign-btn {
+    padding: 6px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
