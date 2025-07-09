@@ -13,7 +13,6 @@ const createTask = async (req, res) => {
         const newTask = new Task({ title, description, assignedTo, status, priority });
         await newTask.save();
 
-        // Log the activity after saving the task
         await logActivity(req.user._id, 'create', newTask._id );
 
         const populatedTask = await Task.findById(newTask._id).populate('assignedTo', 'name email');
@@ -71,7 +70,7 @@ const updateTask = async (req, res) => {
             { new: true }
         ).populate('assignedTo', 'name email');
 
-        // === Activity Logging ===
+       
         if (existingTask.status !== updatedTask.status) {
             await logActivity(req.user._id, 'move', taskId);
         } else if (
@@ -100,7 +99,6 @@ const deleteTask = async (req, res) => {
     try {
         await Task.findByIdAndDelete(req.params.id);
 
-        // Log the delete action
         await logActivity(req.user._id, 'delete', req.params.id );
 
         const io = req.app.get('io');
