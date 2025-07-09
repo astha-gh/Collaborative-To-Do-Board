@@ -16,6 +16,8 @@
     padding: 25px;
     border-radius: 12px;
     width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     animation: fadeIn 0.2s ease-in-out;
 }
