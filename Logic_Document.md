@@ -1,6 +1,6 @@
 ## How you implemented Smart Assign
 
--Smart Assign gives the task to the user with the fewest tasks. This is done so that the tasks are distributed fairly among all users.
+- Smart Assign gives the task to the user with the fewest tasks. This is done so that the tasks are distributed fairly among all users.
 - So, to implement it we need to first give all tasks and all users to the smart assign button, specifically to the function that handles the smart assign button. This is done through props.
 - Once this is done we count the number of active tasks(To-do and In-Progress) of every user.
 - The user with the least number of tasks is assigned to do the task.
