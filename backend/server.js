@@ -6,6 +6,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 
+
 const http = require('http');
 const { Server } = require('socket.io');
 const server = http.createServer(app);
@@ -29,10 +30,13 @@ mongoose.connect(process.env.MONGO_URI).then(
 ).catch(err => console.log(err));
 
 app.use("/api/auth", require("./routes/auth"));
-app.use('/api/tasks' , require('./routes/taskRoutes'));
+app.use('/api/tasks', require('./routes/taskRoutes'));
+const activityLogRoutes = require('./routes/activityLogs');
+app.use('/api/activity-logs', activityLogRoutes);
+
 
 app.set("io", io);
 
-server.listen(PORT , () => {
+server.listen(PORT, () => {
     console.log(`Server is listening in ${PORT}`)
 })

@@ -1,16 +1,16 @@
-import React, {useState , useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/NewTaskModal.css';
 import SmartAssign from './SmartAssignButton';
 
-const NewTaskModal = ({onClose , taskToEdit , allTasks}) => {
+const NewTaskModal = ({ onClose, taskToEdit, allTasks }) => {
     const [conflictData, setConflictData] = useState(null);
-    const [form , setForm] = useState({
-        title : '',
+    const [form, setForm] = useState({
+        title: '',
         description: '',
         assignedTo: '',
-        status:'Todo',
-        priority:'Medium',
-        lastUpdated:'',
+        status: 'Todo',
+        priority: 'Medium',
+        lastUpdated: '',
     });
 
     const [users, setUser] = useState([]);
@@ -28,15 +28,15 @@ const NewTaskModal = ({onClose , taskToEdit , allTasks}) => {
         }
     }, [taskToEdit]);
 
-    useEffect(()=> {
+    useEffect(() => {
         fetch('http://localhost:7777/api/auth/users')
             .then(res => res.json())
             .then(data => setUser(data))
-            .catch(err => console.error('Failed to load users' , err));
-    } , []);
+            .catch(err => console.error('Failed to load users', err));
+    }, []);
 
     const handleChange = (e) => {
-        setForm({...form , [e.target.name]: e.target.value});
+        setForm({ ...form, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
@@ -81,8 +81,8 @@ const NewTaskModal = ({onClose , taskToEdit , allTasks}) => {
             alert('Something went wrong');
         }
     };
-    
-    
+
+
 
     const handleOverwrite = async () => {
         try {
@@ -95,7 +95,7 @@ const NewTaskModal = ({onClose , taskToEdit , allTasks}) => {
                 body: JSON.stringify({
                     ...conflictData.clientVersion,
                     lastUpdated: new Date().toISOString(),
-                    isResolution: true 
+                    isResolution: true
                 }),
             });
 
@@ -109,9 +109,9 @@ const NewTaskModal = ({onClose , taskToEdit , allTasks}) => {
 
     const handleMerge = async () => {
         try {
-            
+
             const mergedTask = {
-                ...conflictData.serverVersion, 
+                ...conflictData.serverVersion,
                 description: `${conflictData.serverVersion.description} ${conflictData.clientVersion.description}`,
                 lastUpdated: new Date().toISOString(),
                 isResolution: true
@@ -132,13 +132,13 @@ const NewTaskModal = ({onClose , taskToEdit , allTasks}) => {
             alert('Merge failed. Please try again.');
         }
     };
-    
-    
+
+
 
     const handleSmartAssign = () => {
         const user = SmartAssign(allTasks, users);
-        if(user) {
-            setForm(prev => ({...prev , assignedTo: user._id}));
+        if (user) {
+            setForm(prev => ({ ...prev, assignedTo: user._id }));
         }
     };
 
@@ -244,13 +244,13 @@ const NewTaskModal = ({onClose , taskToEdit , allTasks}) => {
                             Cancel
                         </button>
                         <button type="submit">{taskToEdit ? 'Update' : 'Create'}</button>
-                        
+
                     </div>
                 </form>
             </div>
         </div>
     );
-    
+
 }
 
 export default NewTaskModal;
