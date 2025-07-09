@@ -6,7 +6,7 @@ const ActivityLogPanel = () => {
     const [logs, setLogs] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:7777/api/activity-logs', {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/api/activity-logs`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
             }

@@ -29,7 +29,7 @@ const NewTaskModal = ({ onClose, taskToEdit, allTasks }) => {
     }, [taskToEdit]);
 
     useEffect(() => {
-        fetch('http://localhost:7777/api/auth/users')
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/users`)
             .then(res => res.json())
             .then(data => setUser(data))
             .catch(err => console.error('Failed to load users', err));
@@ -43,8 +43,8 @@ const NewTaskModal = ({ onClose, taskToEdit, allTasks }) => {
         e.preventDefault();
 
         const url = taskToEdit
-            ? `http://localhost:7777/api/tasks/${taskToEdit._id}`
-            : `http://localhost:7777/api/tasks`;
+            ? `${process.env.REACT_APP_BACKEND_URL}/api/tasks/${taskToEdit._id}`
+            : `${process.env.REACT_APP_BACKEND_URL}/api/tasks`;
 
         const method = taskToEdit ? 'PUT' : 'POST';
 
@@ -86,7 +86,7 @@ const NewTaskModal = ({ onClose, taskToEdit, allTasks }) => {
 
     const handleOverwrite = async () => {
         try {
-            const response = await fetch(`http://localhost:7777/api/tasks/${taskToEdit._id}`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tasks/${taskToEdit._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -117,7 +117,7 @@ const NewTaskModal = ({ onClose, taskToEdit, allTasks }) => {
                 isResolution: true
             };
 
-            const response = await fetch(`http://localhost:7777/api/tasks/${taskToEdit._id}`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tasks/${taskToEdit._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

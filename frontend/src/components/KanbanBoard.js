@@ -13,7 +13,7 @@ const KanbanBoard = () => {
     const [taskToEdit, setTaskToEdit] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:7777/api/tasks', {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tasks`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -55,7 +55,7 @@ const KanbanBoard = () => {
         const update = { ...draggedTask, status: newStatus };
 
         try {
-            const res = await fetch(`http://localhost:7777/api/tasks/${draggedTaskId}`, {
+            const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tasks/${draggedTaskId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ const KanbanBoard = () => {
     };
 
     const handleDeleteTask = async (taskId) => {
-        await fetch(`http://localhost:7777/api/tasks/${taskId}`, {
+        await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tasks/${taskId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
