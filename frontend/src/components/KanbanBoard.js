@@ -3,7 +3,7 @@ import socket from '../socket';
 import '../styles/KanbanBoard.css';
 import TaskCard from './TaskCard';
 import NewTaskModal from "./NewTaskModal";
-import ActivityLogPanel from './ActivityLog';
+import OnlineUsers from './OnlineUsers';
 
 
 const KanbanBoard = () => {
@@ -13,7 +13,7 @@ const KanbanBoard = () => {
     const [taskToEdit, setTaskToEdit] = useState(null);
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tasks`, {
+        fetch('https://to-do-backend-1-ihwt.onrender.com/api/tasks', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -55,7 +55,7 @@ const KanbanBoard = () => {
         const update = { ...draggedTask, status: newStatus };
 
         try {
-            const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tasks/${draggedTaskId}`, {
+            const res = await fetch(`https://to-do-backend-1-ihwt.onrender.com/api/tasks/${draggedTaskId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -63,8 +63,7 @@ const KanbanBoard = () => {
                 },
                 body: JSON.stringify(update),
             });
-            const data = await res.json();
-            socket.emit('taskUpdated', data);
+            await res.json();
         }
         catch (err) {
             console.error('Failed to update task status:', err);
@@ -77,7 +76,7 @@ const KanbanBoard = () => {
     };
 
     const handleDeleteTask = async (taskId) => {
-        await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tasks/${taskId}`, {
+        await fetch(`https://to-do-backend-1-ihwt.onrender.com/api/tasks/${taskId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -98,10 +97,17 @@ const KanbanBoard = () => {
 
 
     return (
-        <div className="kanban-board-wrapper">
+
+        <div>
+
             <div className="kanban-board-header">
-                <h2>Collaborative To-Do Board</h2>
-                <button className="create-task-btn" onClick={() => setShowModal(true)}>+ New Task</button>
+                <h2>Kanban Board</h2>
+                <div className="header-controls">
+                    <OnlineUsers />
+                    <button className="create-task-btn" onClick={() => setShowModal(true)}>
+                        New Task
+                    </button>
+                </div>
             </div>
 
             {showModal && (
@@ -109,38 +115,36 @@ const KanbanBoard = () => {
                     onClose={() => {
                         setShowModal(false);
                         setTaskToEdit(null);
-                    }}
+                    }
+                    }
                     taskToEdit={taskToEdit}
                     allTasks={tasks}
                 />
             )}
 
-            <div className="kanban-content">
-                <div className="kanban-container">
-                    {columns.map(col => (
-                        <div key={col.key} className="kanban-column"
-                            onDrop={(e) => handleDrop(e, col.key)}
-                            onDragOver={handleDragOver}
-                        >
-                            <h3>{col.label}</h3>
-                            {
-                                tasks
-                                    .filter(task => task.status === col.key)
-                                    .map(task => (
-                                        <TaskCard
-                                            key={task._id}
-                                            task={task}
-                                            onDragStart={handleDragStart}
-                                            onDelete={handleDeleteTask}
-                                            onEdit={handleEditTask}
-                                        />
-                                    ))
-                            }
-                        </div>
-                    ))}
-                </div>
+            <div className="kanban-container">
+                {columns.map(col => (
+                    <div key={col.key} className="kanban-column"
+                        onDrop={(e) => handleDrop(e, col.key)}
+                        onDragOver={handleDragOver}
+                    >
+                        <h3>{col.label}</h3>
+                        {
+                            tasks
+                                .filter(task => task.status === col.key)
+                                .map(task => (
+                                    <TaskCard
+                                        key={task._id}
+                                        task={task}
+                                        onDragStart={handleDragStart}
+                                        onDelete={handleDeleteTask}
+                                        onEdit={handleEditTask}
+                                    />
+                                ))
+                        }
+                    </div>
+                ))}
 
-                <ActivityLogPanel />
             </div>
         </div>
     );

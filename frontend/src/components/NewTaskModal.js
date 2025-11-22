@@ -29,7 +29,7 @@ const NewTaskModal = ({ onClose, taskToEdit, allTasks }) => {
     }, [taskToEdit]);
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/users`)
+        fetch('https://to-do-backend-1-ihwt.onrender.com/api/auth/users')
             .then(res => res.json())
             .then(data => setUser(data))
             .catch(err => console.error('Failed to load users', err));
@@ -43,8 +43,8 @@ const NewTaskModal = ({ onClose, taskToEdit, allTasks }) => {
         e.preventDefault();
 
         const url = taskToEdit
-            ? `${process.env.REACT_APP_BACKEND_URL}/api/tasks/${taskToEdit._id}`
-            : `${process.env.REACT_APP_BACKEND_URL}/api/tasks`;
+            ? `https://to-do-backend-1-ihwt.onrender.com/api/tasks/${taskToEdit._id}`
+            : `https://to-do-backend-1-ihwt.onrender.com/api/tasks`;
 
         const method = taskToEdit ? 'PUT' : 'POST';
 
@@ -86,7 +86,7 @@ const NewTaskModal = ({ onClose, taskToEdit, allTasks }) => {
 
     const handleOverwrite = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tasks/${taskToEdit._id}`, {
+            const response = await fetch(`https://to-do-backend-1-ihwt.onrender.com/api/tasks/${taskToEdit._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -117,7 +117,7 @@ const NewTaskModal = ({ onClose, taskToEdit, allTasks }) => {
                 isResolution: true
             };
 
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tasks/${taskToEdit._id}`, {
+            const response = await fetch(`/${taskToEdit._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -148,7 +148,7 @@ const NewTaskModal = ({ onClose, taskToEdit, allTasks }) => {
                 <h2>{taskToEdit ? 'Edit Task' : 'Create New Task'}</h2>
                 {conflictData && (
                     <div className="conflict-warning">
-                        <h3>⚠️ Conflict Detected</h3>
+                        <h3> Conflict Detected</h3>
                         <p>This task was updated by someone else. Choose how to resolve:</p>
 
                         <div className="conflict-boxes">
@@ -217,7 +217,7 @@ const NewTaskModal = ({ onClose, taskToEdit, allTasks }) => {
                             ))}
                         </select>
                         <button type="button" className="smart-assign-btn" onClick={handleSmartAssign}>
-                            🎯 Smart Assign
+                            Smart Assign
                         </button>
                     </div>
 

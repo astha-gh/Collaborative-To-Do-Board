@@ -1,0 +1,36 @@
+.online-users {
+    display: flex;
+    align-items: center;
+}
+
+.online-indicator {
+    background: #e8f5e8;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #2e7d32;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #c8e6c9;
+}
+
+.status-dot {
+    color: #4caf50;
+    font-size: 12px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

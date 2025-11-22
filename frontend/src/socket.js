@@ -1,8 +1,5 @@
 import { io } from 'socket.io-client'
 
-const socket = io(process.env.REACT_APP_BACKEND_URL, {
-    transports: ['websocket'], 
-    withCredentials: true
-});
+const socket = io('http://localhost:8888');
 
 export default socket;
