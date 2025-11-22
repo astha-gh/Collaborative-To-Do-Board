@@ -22,7 +22,7 @@ const RegisterPage = () => {
         const data = await res.json();
         if (res.ok) {
             localStorage.setItem('token', data.token);
-            navigate('/login');
+            navigate('/');
         } else {
             alert(data.message || "Registration failed");
         }
